@@ -15,8 +15,15 @@ composer install
 ## 3 Paramètrer le fichier .env
 ```sh
 # créer ou éditer .env
+APP_ENV=dev
+APP_SECRET=
+APP_SHARE_DIR=var/share
+DEFAULT_URI=http://localhost
 DATABASE_URL=
-# créer ou éditer .env.dev 
+MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
+MAILER_DSN=null://null
+# créer ou éditer .env.dev
+APP_SECRET=e72cbda888eb6d60b401bec9e2d9aa6a 
 DATABASE_URL="mysql://root:@127.0.0.1:3306/movie-cda?serverVersion=10.4.32-MariaDB&charset=utf8mb4"
 ```
 
