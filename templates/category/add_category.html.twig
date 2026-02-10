@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une categorie{% endblock %}
+
+{% block body %}
+    <main class="container-fluid">
+        <turbo-frame id="id_category">
+        {{ form_start(form) }}
+        {{ form_end(form) }}
+    
+       {% for message in app.flashes('success') %}
+            <div class="flash-notice">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </turbo-frame>
+</main>
+{% endblock %}
