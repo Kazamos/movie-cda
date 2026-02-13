@@ -6,7 +6,7 @@ on:
     pull_request:
         branches: [ main, test ]
 jobs:
-    Symfony-test:
+    e2e:
         runs-on: ubuntu-latest
         # installation des services
         services:
