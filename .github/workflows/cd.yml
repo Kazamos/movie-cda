@@ -1,0 +1,67 @@
+name: test cypress e2e
+
+# événément sur lequel lancer le workflow
+on:
+  push:
+    branches: ["main", "test", "feature"]
+  pull_request:
+    branches: ["main", "test", "feature"]
+  workflow_dispatch:
+
+# décrire le workflow
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: app
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    # décrire les étapes
+    steps:
+      # récupérer le code du projet
+      - name: Checkout projet
+        uses: actions/checkout@v5
+      # installer php (composer + extension) https://github.com/shivammathur/setup-php
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo_mysql, intl, sodium, zip
+          tools: composer
+          coverage: none
+      # créer la BDD (ligne de commande)
+      - name: création de la BDD
+        run: |
+          mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS app_test;"
+      # créer les fichiers .env / env.test
+      - name: création des fichiers d'environnements
+        run: |
+          cp .env .env.test
+          echo "APP_ENV=test" >> .env.test
+          echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/app" >> .env.test
+          echo "JWT_PASSPHRASE=masupercle" >> .env.test
+      - name: Création des clés private + public
+        run: |
+          mkdir -p config/jwt
+          openssl genpkey -out config/jwt/private.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -pass pass:masupercle
+          openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout -passin pass:masupercle
+      # installer les dépendances (composer install)
+      - name: install des dépendances
+        run: composer install --no-interaction --prefer-dist
+      # migrer la structure de données (php/bin console d:m:m)
+      - name: migrer la structure de données
+        run : php bin/console d:m:m
+      # démarrer le serveur PHP (php -S 127.0.0.1:8000 -t public &) run(saisir des commandes bash)
+      - name: démarrage du serveur PHP
+        run: php -S 127.0.0.1:8000 -t public &
+      # installer avec cypress - name: Cypress run
+      # uses: cypress-io/github-action@v7
