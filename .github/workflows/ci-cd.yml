@@ -111,6 +111,8 @@ jobs:
           # installation des dépendances composer prod
           - name: Installer dépendances Composer
             run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+            env:
+              SYMFONY_DEPRECATIONS_HELPER: disabled=1
 
 
           - name: Sync files via FTP
