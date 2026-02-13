@@ -72,7 +72,7 @@ jobs:
         with:
           wait-on: 'http://127.0.0.1:8000'
 
-deploy:
+  deploy:
     runs-on: ubuntu-latest
     needs: e2e # Attend la réussite des tests
     if: github.ref == 'refs/heads/main' # Ne déploie que si on est sur la branche main
@@ -113,4 +113,3 @@ deploy:
             **/.git*/**
             **/node_modules/**
             **/tests/**
-            
